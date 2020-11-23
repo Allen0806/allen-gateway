@@ -1,5 +1,5 @@
 server:
-  port: 8706      
+  port: 8702      
 spring:  application:    name: allen-gateway
   cloud:    gateway:
       discovery:        locator:
