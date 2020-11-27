@@ -3,16 +3,16 @@ server:
 spring:  application:    name: allen-gateway
   cloud:    gateway:
       discovery:        locator:
-          # 是否与服务注册于发现组件进行结合，通过 serviceId 转发到具体的服务实例。
+          # 是否与服务注册发现组件进行结合，通过 serviceId 转发到具体的服务实例。
           # 默认为 false，设为 true 便开启通过服务中心的自动根据 serviceId 创建路由的功能          enabled: true      routes:      - id: message_route
 #        uri: http://localhost:8030
-        uri: lb://allen-message-sending
+        uri: lb://allen-message-forwarding-server
         filters:        - name: RequestRateLimiter
           args:            redis-rate-limiter.replenishRate: 10
             redis-rate-limiter.burstCapacity: 20
         predicates:
         - Method=POST
-        - Path=/ms/**
+        - Path=/mf/**
         
   redis:
     host: localhost
