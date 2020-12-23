@@ -1,21 +1,12 @@
 package com.allen.gateway.config;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.web.reactive.result.view.ViewResolver;
 
-import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
-import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
+import reactor.core.publisher.Mono;
 
 /**
  * 网关配置类
@@ -27,33 +18,37 @@ import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBloc
 @Configuration
 public class GatewayConfig {
 
-	private final List<ViewResolver> viewResolvers;
+//	/**
+//	 * 跨域支持配置
+//	 */
+//	@Bean
+//	public CorsWebFilter corsFilter() {
+//		CorsConfiguration config = new CorsConfiguration();
+//		config.addAllowedMethod("*");
+//		config.addAllowedOrigin("*");
+//		config.addAllowedHeader("*");
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
+//		source.registerCorsConfiguration("/**", config);
+//		return new CorsWebFilter(source);
+//	}
 
-	private final ServerCodecConfigurer serverCodecConfigurer;
-
-	public GatewayConfig(ObjectProvider<List<ViewResolver>> viewResolversProvider,
-			ServerCodecConfigurer serverCodecConfigurer) {
-		this.viewResolvers = viewResolversProvider.getIfAvailable(Collections::emptyList);
-		this.serverCodecConfigurer = serverCodecConfigurer;
-	}
-
-	@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public SentinelGatewayBlockExceptionHandler sentinelGatewayBlockExceptionHandler() {
-		// Register the block exception handler for Spring Cloud Gateway.
-		return new SentinelGatewayBlockExceptionHandler(viewResolvers, serverCodecConfigurer);
-	}
-
-	@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	public GlobalFilter sentinelGatewayFilter() {
-		return new SentinelGatewayFilter();
+	/**
+	 * 远程地址键解析器
+	 */
+	@Bean(value = "remoteAddrKeyResolver")
+	public KeyResolver remoteAddrKeyResolver() {
+		return exchange -> Mono.just(exchange.getRequest().getRemoteAddress().getAddress().getHostAddress());
 	}
 
 	@Bean
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-		return builder.routes().route("message_test", r -> r.path("/spring-cloud").uri("http://www.ityouknow.com"))
-				.build();
+		return builder.routes().route("gateway_test", r -> r.path("/spring-cloud").uri("http://baidu.com")).build();
 	}
+	
+//	@Bean
+//	@Scope(value = "prototype")
+//	public IRule loadBalanceRule() {
+//		return new NacosRule();
+//	}
 
 }
