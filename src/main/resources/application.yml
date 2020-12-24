@@ -15,12 +15,12 @@ spring:  application:    name: allen-gateway
               - DELETE
               - PUT
               - OPTION
-      httpclient:        connect-timeout: 1000
+      httpclient:        connect-timeout: 3000
         response-timeout: 5s
       discovery:        locator:
           # 是否与服务注册发现组件进行结合，通过 serviceId 转发到具体的服务实例。
           # 默认为 false，设为 true 便开启通过服务中心的自动根据 serviceId 创建路由的功能          enabled: false      routes:      - id: message_send
-        uri: http://localhost:8084
+        uri: https://wwww.baidu.com
 #        uri: lb://allen-message-sending
 #        filters:#        - name: RequestRateLimiter
 #          args:
@@ -31,8 +31,8 @@ spring:  application:    name: allen-gateway
 #              # 一秒内最大的请求数，其实就是令牌桶的最大容量，如果设置为0，则会阻塞所有请求
 #              burstCapacity: 20
         predicates:
-        - Method=POST
-        - Path=/ms/**
+#        - Method=POST
+        - Path=/ms/{segment}
         
       - id: message_forwarding
         uri: http://localhost:8083

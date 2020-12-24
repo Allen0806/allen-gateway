@@ -42,7 +42,7 @@ public class GatewayConfig {
 
 	@Bean
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-		return builder.routes().route("gateway_test", r -> r.path("/spring-cloud").uri("http://baidu.com")).build();
+		return builder.routes().route("gateway_test", r -> r.path("/spring-cloud").uri("https://www.baidu.com")).build();
 	}
 	
 //	@Bean
