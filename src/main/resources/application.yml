@@ -19,23 +19,9 @@ spring:  application:    name: allen-gateway
         response-timeout: 5s
       discovery:        locator:
           # 是否与服务注册发现组件进行结合，通过 serviceId 转发到具体的服务实例。
-          # 默认为 false，设为 true 便开启通过服务中心的自动根据 serviceId 创建路由的功能          enabled: false      routes:      - id: message_send
-        uri: https://wwww.baidu.com
-#        uri: lb://allen-message-sending
-#        filters:#        - name: RequestRateLimiter
-#          args:
-#             # 基于Stripe的redis实现方案，使用的是令牌桶算法
-#            redis-rate-limiter:
-#              # 每秒允许通过的请求数，其实就是令牌桶的填充速率
-#              replenishRate: 10
-#              # 一秒内最大的请求数，其实就是令牌桶的最大容量，如果设置为0，则会阻塞所有请求
-#              burstCapacity: 20
-        predicates:
-#        - Method=POST
-        - Path=/ms/{segment}
-        
-      - id: message_forwarding
-        uri: http://localhost:8083
+          # 默认为 false，设为 true 便开启通过服务中心的自动根据 serviceId 创建路由的功能          enabled: false      routes:      - id: message_forwarding
+        uri: http://localhost:8089
+        order: 2
 #        uri: lb://allen-message-forwarding-server
 #        filters:
 #        - name: RequestRateLimiter
@@ -48,7 +34,24 @@ spring:  application:    name: allen-gateway
 #              burstCapacity: 20
         predicates:
         - Method=POST
-        - Path=/mf/**
+        - Path=/ms/**
+        
+      - id: message_send
+        uri: http://localhost:8084
+        order: 1
+#        uri: lb://allen-message-sending
+#        filters:
+#        - name: RequestRateLimiter
+#          args:
+#             # 基于Stripe的redis实现方案，使用的是令牌桶算法
+#            redis-rate-limiter:
+#              # 每秒允许通过的请求数，其实就是令牌桶的填充速率
+#              replenishRate: 10
+#              # 一秒内最大的请求数，其实就是令牌桶的最大容量，如果设置为0，则会阻塞所有请求
+#              burstCapacity: 20
+        predicates:
+        - Method=POST
+        - Path=/ms/send/**
               
     sentinel:
       transport:
